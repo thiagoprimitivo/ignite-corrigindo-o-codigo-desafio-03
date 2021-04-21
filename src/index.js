@@ -30,21 +30,23 @@ app.post("/repositories", (request, response) => {
 
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
-  const updatedRepository = request.body;
+  const { title, url, techs } = request.body;
+
+  repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  
+  if (repositoryIndex < 0) {
+    return response.status(404).json({ error: "Repository not found" });
+  }
 
   if (!validate(id)) {
     return response.status(400).json({ error: "UUID is not valid"});
   }
 
-  repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  repositories[repositoryIndex].title = title;
+  repositories[repositoryIndex].url = url;
+  repositories[repositoryIndex].techs = techs;
 
-  if (repositoryIndex < 0) {
-    return response.status(404).json({ error: "Repository not found" });
-  }
-
-  const repository = { ...repositories[repositoryIndex], ...updatedRepository };
-
-  repositories[repositoryIndex] = repository;
+  const repository = repositories[repositoryIndex];
 
   return response.json(repository);
 });

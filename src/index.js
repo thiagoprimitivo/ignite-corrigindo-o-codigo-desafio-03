@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { v4: uuid } = require("uuid");
+const { v4: uuid, validate } = require("uuid");
 
 const app = express();
 
@@ -32,9 +32,11 @@ app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
   const updatedRepository = request.body;
 
+  if (!validate(id)) {
+    return response.status(400).json({ error: "UUID is not valid"});
+  }
 
-
-  repositoryIndex = repositories.findindex(repository => repository.id === id);
+  repositoryIndex = repositories.findIndex(repository => repository.id === id);
 
   if (repositoryIndex < 0) {
     return response.status(404).json({ error: "Repository not found" });
